@@ -1,0 +1,113 @@
+<?php
+
+trait Container_Tool_HandlerHelp
+{
+
+    /**
+     * @var array 返回结果集
+     */
+    protected $_result;
+
+    /**
+     * 将字符串参数变为数组
+     * @param string $query 字符串
+     * Example：['a'=>12,'b'=>123]
+     * @return array
+     */
+    public function convertUrlQuery(string $query)
+    {
+        $queryParts = explode('&', $query);
+        $params = [];
+        foreach ($queryParts as $param) {
+            $item = explode('=', $param);
+            $params[$item[0]] = $item[1];
+        }
+        return $params;
+    }
+
+    /**
+     * 将数组参数变为字符串
+     * Example:"a=12&b=123"
+     * @param array $array_query 数组参数
+     * @return string
+     */
+    public function getUrlQuery(array $array_query)
+    {
+        $tmp = [];
+        foreach ($array_query as $k => $param) {
+            $tmp[] = $k . '=' . $param;
+        }
+        return implode('&', $tmp);
+    }
+
+    /**
+     * 获取返回参数
+     * @param $code
+     * @return string
+     */
+    public function getResult($code)
+    {
+        return $this->_return($code);
+    }
+
+    /**
+     * API 返回
+     * @param int $code 状态码
+     * @return false|string
+     */
+    protected function _return($code)
+    {
+        $response = [
+            'code' => $code,
+            'msg' => $this->_result['desc'],
+            'data' => $this->_result['data']
+        ];;
+        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
+    /**
+     * 设置API接口错误返回数据
+     * @param string $errorCode
+     */
+    protected function _setApiError($errorCode)
+    {
+        $returnData = array_filter(explode('_', $errorCode, 2));
+        if (!empty($returnData[0]) && !empty($returnData[1])) {
+            $this->_result['data'] = [];
+            $this->_result['desc'] = $returnData[1];
+        } else {
+            $this->_result['desc'] = $errorCode;
+        }
+    }
+
+    /**
+     * 设置API接口成功返回数据
+     * @param array $data
+     * @throws Container_Exception_BusinessException
+     */
+    protected function _setApiSuccess(array $data)
+    {
+        if (is_array($data)) {
+            $this->_result['data'] = $data;
+            $this->_result['desc'] = 'success';
+        } else {
+            throw new Container_Exception_BusinessException('参数格式不规范', 1004, '');
+        }
+    }
+
+    /**
+     * @param $code
+     * @param $message
+     * @param $file
+     * @param $line
+     */
+    function setMyRecoverableError($code, $message, $file, $line)
+    {
+        if ($message === 'Object of class stdClass could not be converted to string') {
+            $this->_setApiError('1002_参数无效');
+            echo $this->_return();
+            exit();
+        }
+    }
+}
