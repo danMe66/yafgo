@@ -25,12 +25,6 @@ abstract class Container_Base_ApiHandler extends Container_Handler_BaseHandler
     abstract public function _config();
 
     /**
-     * 必填参数
-     * @return array
-     */
-    abstract public function _requiredParams();
-
-    /**
      * @return mixed
      */
     abstract public function run();
