@@ -78,7 +78,7 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
         $this->_version = $this->getVersion();//获取接口版本号
         $this->_token = $this->getToken();//获取用户请求的token验证信息
         $this->_browseInfo = $this->getBrowseInfo();//获取用户浏览器信息
-        $this->_config = new container_handler_HandlerConfig();
+        $this->_config = new Container_Handler_HandlerConfig();
         $this->_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
         $this->work();
     }
