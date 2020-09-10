@@ -6,7 +6,7 @@
  * @property boolean checkMethod
  * @property boolean checkRequest
  */
-final class Container_Handler_Config
+final class Container_Handler_HandlerConfig
 {
     /**
      * @var bool 是否需要token认证
