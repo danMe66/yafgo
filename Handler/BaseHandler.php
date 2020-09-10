@@ -72,7 +72,7 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
     protected $requestBody;
 
     /**
-     * @var Container_handler_HandlerConfig
+     * @var Container_handler_Config
      */
     protected $_config;
 
@@ -97,7 +97,7 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
         $this->_token = $this->getToken();//获取用户请求的token验证信息
         $this->_browseInfo = $this->getBrowseInfo();//获取用户浏览器信息
         $this->_http_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
-        $this->_config = new Container_handler_HandlerConfig();
+        $this->_config = new Container_handler_Config();
         $this->setConfig();
         $this->checkAuth();
         $this->work();
