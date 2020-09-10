@@ -120,7 +120,7 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
             }
             $token_list = Container_Core_Auth::encodeToken($this->_token);
             if (!is_array($token_list) or count($token_list) != 2) {
-                $this->_setApiError(Container_Error_ErrDesc_ErrorDto::USER_NOT_LOGIN);
+                $this->_setApiError(Container_Error_ErrDesc_ErrorDto::USER_NOT_LOGGED_IN);
                 return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
             }
             $uid = isset($list[0]) ? $token_list[0] : 0;
