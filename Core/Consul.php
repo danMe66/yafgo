@@ -2,7 +2,6 @@
 
 class Container_Core_Consul
 {
-    use Container_Handler_HandlerContext;
     use Container_Core_Trait_Config;
 
     /**
