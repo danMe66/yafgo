@@ -61,7 +61,8 @@ trait Container_Tool_HandlerHelp
             'msg' => $this->_result['desc'],
             'data' => $this->_result['data']
         ];;
-        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);exit;
+        header('Content-Type:application/json');//加上这行,前端那边就不需要var result = $.parseJSON(data);
+        echo json_encode($response,JSON_UNESCAPED_UNICODE);exit;
     }
 
     /**
