@@ -58,7 +58,7 @@ abstract class Container_StrongType_Base
         }
 
         //判断是否是索引数组
-        if (container_tool_ArrayHelper::isAssocArray($data)) {
+        if (Container_Tool_ArrayHelper::isAssocArray($data)) {
             throw new container_exception_BaseException('不可识别的数据格式');
         }
         $this->addFieldTypes();
@@ -370,7 +370,7 @@ abstract class Container_StrongType_Base
      */
     public function getDefinedFieldNames()
     {
-        return container_Tool_ClassInformation::getPublicProperties($this);
+        return Container_Tool_ClassInformation::getPublicProperties($this);
     }
 
     /**
