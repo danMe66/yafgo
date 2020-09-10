@@ -370,7 +370,7 @@ abstract class Container_StrongType_Base
      */
     public function getDefinedFieldNames()
     {
-        return container_tool_ClassInformation::getPublicProperties($this);
+        return container_Tool_ClassInformation::getPublicProperties($this);
     }
 
     /**
