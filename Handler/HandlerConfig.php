@@ -2,37 +2,31 @@
 
 /**
  * handler相关配置类
- * Class Container_Handler_HandlerConfig
+ * @property boolean needToken
+ * @property boolean checkMethod
+ * @property boolean checkRequest
  */
 final class Container_Handler_HandlerConfig
 {
     /**
      * @var bool 是否需要token认证
      */
-    public $_needToken;
+    protected $_needToken;
 
     /**
      * @var bool 是否需要进行method检查
      */
-    public $_checkMethod;
-
-
-    /**
-     * @var bool 是否切换为数据库只读实例
-     */
-    public $_useReadOnlyDb;
+    protected $_checkMethod;
 
     /**
      * @var bool 是否验证请求
      */
-    public $_checkRequest;
+    protected $_checkRequest;
 
-    function __construct($needToken = false, $checkMethod = true, $checkRequest = true, $useReadOnlyDb = false)
+    function __construct($needToken = false, $checkMethod = false, $checkRequest = false)
     {
         $this->_needToken = $needToken;
         $this->_checkMethod = $checkMethod;
         $this->_checkRequest = $checkRequest;
-        $this->_useReadOnlyDb = $useReadOnlyDb;
     }
-
 }

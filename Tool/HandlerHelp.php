@@ -2,7 +2,6 @@
 
 trait Container_Tool_HandlerHelp
 {
-
     /**
      * @var array 返回结果集
      */
@@ -62,21 +61,21 @@ trait Container_Tool_HandlerHelp
             'msg' => $this->_result['desc'],
             'data' => $this->_result['data']
         ];;
-        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
+        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);exit;
     }
 
     /**
      * 设置API接口错误返回数据
      * @param string $errorCode
      */
-    protected function _setApiError($errorCode)
+    protected function _setApiError(string $errorCode)
     {
         $returnData = array_filter(explode('_', $errorCode, 2));
         if (!empty($returnData[0]) && !empty($returnData[1])) {
             $this->_result['data'] = [];
             $this->_result['desc'] = $returnData[1];
         } else {
+            $this->_result['data'] = [];
             $this->_result['desc'] = $errorCode;
         }
     }
@@ -84,7 +83,7 @@ trait Container_Tool_HandlerHelp
     /**
      * 设置API接口成功返回数据
      * @param array $data
-     * @throws Container_Exception_BusinessException
+     * @return array|string
      */
     protected function _setApiSuccess(array $data)
     {
@@ -92,7 +91,8 @@ trait Container_Tool_HandlerHelp
             $this->_result['data'] = $data;
             $this->_result['desc'] = 'success';
         } else {
-            throw new Container_Exception_BusinessException('参数格式不规范', 1004, '');
+            $this->_setApiError(Container_Error_ErrDesc_ErrorDto::PARAM_FORMAT_ERROR);
+            return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
         }
     }
 

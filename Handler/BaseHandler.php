@@ -5,9 +5,21 @@
  * 用于获取请求参数（ip，版本号，用户验证信息，浏览器信息......）
  * Class Container_Handler_BaseHandler
  */
-abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
+abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerContext
 {
     use Container_Tool_HandlerHelp;
+
+    protected $script = "";
+
+    /**
+     * @var array 过滤不需要登陆的控制器
+     */
+    protected $exclusion = [];
+
+    /**
+     * @var int 用户ID
+     */
+    protected $userId;
 
     /**
      * @var string 客户端IP
@@ -52,7 +64,7 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
     /**
      * @var object 请求体
      */
-    protected $_request;
+    protected $_http_request;
 
     /**
      * @var
@@ -63,6 +75,12 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      * @var container_handler_HandlerConfig
      */
     protected $_config;
+
+    /**
+     * 获取配置
+     * @return mixed
+     */
+    protected abstract function setConfig();
 
     /**
      * 默认初始化方法，如果不需要，可以删除掉这个方法
@@ -78,8 +96,10 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
         $this->_version = $this->getVersion();//获取接口版本号
         $this->_token = $this->getToken();//获取用户请求的token验证信息
         $this->_browseInfo = $this->getBrowseInfo();//获取用户浏览器信息
-        $this->_config = new Container_Handler_HandlerConfig();
-        $this->_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
+        $this->_http_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
+        $this->_config = new container_handler_HandlerConfig();
+        $this->setConfig();
+        $this->checkAuth();
         $this->work();
     }
 
@@ -87,18 +107,44 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      * 初始化调用一些验证参数，比如：setRequestBody，setResponseBody，_config....
      * 检查接口访问权限(可在这里进行接口访问权限的检测、做网关接口过滤、黑白名单过滤)
      */
-    public function _initRequest()
+    public function checkAuth()
     {
-        //TODO::接口是否需要token验证
-        if ($this->_config->_needToken) {
-
+        //检查接口是否需要token验证
+        if ($this->_config->needToken) {
+            //获取当前调用的方法
+            $actionName = strtolower($this->getRequest()->getActionName());
+            //判断是否在排除名单只外
+            $list = $this->exclusion;
+            foreach ($list as $item) {
+                if (strtolower($item) === $actionName) return;
+            }
+            $list = Container_Core_Auth::encodeToken($this->_token);
+            if (!is_array($list) or count($list) != 2) {
+                $this->_setApiError(Container_Error_ErrDesc_ErrorDto::USER_NOT_LOGIN);
+                return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
+            }
+            $uid = isset($list[0]) ? $list[0] : 0;
+            $pass = isset($list[1]) ? $list[1] : "";
+            $this->userId = $uid;
+            $tokens = Container_Core_Auth::getCacheToken($uid);
+            if (is_array($tokens)) {
+                foreach ($tokens as $key => $token) {
+                    if ($pass == $token) return;
+                }
+            }
+            $tokens = Container_Core_Auth::getDiskToken($uid);
+            if (is_array($tokens)) {
+                foreach ($tokens as $key => $token) {
+                    if ($pass == $token) return;
+                }
+            }
         }
         //TODO::是否需要对接口请求进行安全验证，暴力请求和恶意攻击等
-        if ($this->_config->_checkRequest) {
+        if ($this->_config->checkRequest) {
 
         }
         //TODO::是否需要对接口请求方式进行限制(需要严格规范请求方式)
-        if ($this->_config->_checkMethod) {
+        if ($this->_config->checkMethod) {
 
         }
     }
@@ -114,7 +160,7 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
             try {
                 $this->requestBody = $jsonMap->map($content, $this->setRequestBody());
             } catch (InvalidArgumentException $e) {
-                $this->_setApiError('1002_参数无效');
+                $this->_setApiError(Container_Error_ErrDesc_ErrorDto::PARAM_FORMAT_REQ_ERROR);
                 return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
             }
             //检查入参
@@ -123,8 +169,6 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
                 $this->_setApiError($checkResMsg);
                 return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
             }
-        } else {
-            throw new Container_Exception_BusinessException('此接口中没有设置参数校验', 1005, '');
         }
     }
 
@@ -218,8 +262,7 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      */
     public function getToken()
     {
-        if (empty($_SERVER['HTTP_AUTHORIZATION'])) return null;
-        return $_SERVER['HTTP_AUTHORIZATION'];
+        return empty($_SERVER['HTTP_AUTHORIZATION']) ? null : $_SERVER['HTTP_AUTHORIZATION'];
     }
 
     /**

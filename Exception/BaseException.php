@@ -15,11 +15,13 @@ class Container_Exception_BaseException extends \Exception
     /**
      * exception constructor.
      * @param string|array $message 错误异常信息
+     * @param int $code
+     * @param $information
      */
-    function __construct($message)
+    function __construct($message, $code, $information)
     {
         $this->message = $message;
-        $this->code = -1;
-        $this->extraInformation = '';
+        $this->code = $code;
+        $this->extraInformation = $information;
     }
 }

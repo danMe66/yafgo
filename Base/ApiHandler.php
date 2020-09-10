@@ -19,13 +19,7 @@ abstract class Container_Base_ApiHandler extends Container_Handler_BaseHandler
     abstract public function setResponseBody();
 
     /**
-     * 配置参数
-     * @return mixed
-     */
-    abstract public function _config();
-
-    /**
-     * @return mixed
+     * @return mixed 接口主入口
      */
     abstract public function run();
 }
