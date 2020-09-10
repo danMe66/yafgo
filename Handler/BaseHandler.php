@@ -72,7 +72,7 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
     protected $requestBody;
 
     /**
-     * @var container_handler_HandlerConfig
+     * @var Container_handler_HandlerConfig
      */
     protected $_config;
 
@@ -97,7 +97,7 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
         $this->_token = $this->getToken();//获取用户请求的token验证信息
         $this->_browseInfo = $this->getBrowseInfo();//获取用户浏览器信息
         $this->_http_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
-        $this->_config = new container_handler_HandlerConfig();
+        $this->_config = new Container_handler_HandlerConfig();
         $this->setConfig();
         $this->checkAuth();
         $this->work();
@@ -114,17 +114,17 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
             //获取当前调用的方法
             $actionName = strtolower($this->getRequest()->getActionName());
             //判断是否在排除名单只外
-            $list = $this->exclusion;
-            foreach ($list as $item) {
+            $not_check_auth_list = $this->exclusion;
+            foreach ($not_check_auth_list as $item) {
                 if (strtolower($item) === $actionName) return;
             }
-            $list = Container_Core_Auth::encodeToken($this->_token);
-            if (!is_array($list) or count($list) != 2) {
+            $token_list = Container_Core_Auth::encodeToken($this->_token);
+            if (!is_array($token_list) or count($token_list) != 2) {
                 $this->_setApiError(Container_Error_ErrDesc_ErrorDto::USER_NOT_LOGIN);
                 return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
             }
-            $uid = isset($list[0]) ? $list[0] : 0;
-            $pass = isset($list[1]) ? $list[1] : "";
+            $uid = isset($list[0]) ? $token_list[0] : 0;
+            $pass = isset($list[1]) ? $token_list[1] : "";
             $this->userId = $uid;
             $tokens = Container_Core_Auth::getCacheToken($uid);
             if (is_array($tokens)) {
