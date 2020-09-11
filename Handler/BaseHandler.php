@@ -99,54 +99,7 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
         $this->_http_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
         $this->_config = new Container_Handler_HandlerConfig();
         $this->setConfig();
-        $this->checkAuth();
         $this->work();
-    }
-
-    /**
-     * 初始化调用一些验证参数，比如：setRequestBody，setResponseBody，_config....
-     * 检查接口访问权限(可在这里进行接口访问权限的检测、做网关接口过滤、黑白名单过滤)
-     */
-    public function checkAuth()
-    {
-        //检查接口是否需要token验证
-        if ($this->_config->needToken) {
-            //获取当前调用的方法
-            $actionName = strtolower($this->getRequest()->getActionName());
-            //判断是否在排除名单只外
-            $not_check_auth_list = $this->exclusion;
-            foreach ($not_check_auth_list as $item) {
-                if (strtolower($item) === $actionName) return;
-            }
-            $token_list = Container_Core_Auth::encodeToken($this->_token);
-            if (!is_array($token_list) or count($token_list) != 2) {
-                $this->_setApiError(Container_Error_ErrDesc_ErrorDto::USER_NOT_LOGGED_IN);
-                return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
-            }
-            $uid = isset($list[0]) ? $token_list[0] : 0;
-            $pass = isset($list[1]) ? $token_list[1] : "";
-            $this->userId = $uid;
-            $tokens = Container_Core_Auth::getCacheToken($uid);
-            if (is_array($tokens)) {
-                foreach ($tokens as $key => $token) {
-                    if ($pass == $token) return;
-                }
-            }
-            $tokens = Container_Core_Auth::getDiskToken($uid);
-            if (is_array($tokens)) {
-                foreach ($tokens as $key => $token) {
-                    if ($pass == $token) return;
-                }
-            }
-        }
-        //TODO::是否需要对接口请求进行安全验证，暴力请求和恶意攻击等
-        if ($this->_config->checkRequest) {
-
-        }
-        //TODO::是否需要对接口请求方式进行限制(需要严格规范请求方式)
-        if ($this->_config->checkMethod) {
-
-        }
     }
 
     public function work()
