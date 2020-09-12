@@ -7,6 +7,12 @@
 abstract class Container_Base_ApiHandler extends Container_Handler_BaseHandler
 {
     /**
+     * 获取配置
+     * @return mixed
+     */
+    protected abstract function setApiConfig();
+
+    /**
      * 返回请求body要转化的实体请求类
      * @return mixed
      */

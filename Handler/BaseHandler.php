@@ -5,16 +5,11 @@
  * 用于获取请求参数（ip，版本号，用户验证信息，浏览器信息......）
  * Class Container_Handler_BaseHandler
  */
-abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerContext
+abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
 {
     use Container_Tool_HandlerHelp;
 
-    protected $script = "";
-
-    /**
-     * @var array 过滤不需要登陆的控制器
-     */
-    protected $exclusion = [];
+    protected $checkAuth = ['index'];
 
     /**
      * @var int 用户ID
@@ -76,17 +71,13 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
      */
     protected $_config;
 
-    /**
-     * 获取配置
-     * @return mixed
-     */
-    protected abstract function setConfig();
+    protected abstract function checkAuth();
 
     /**
      * 默认初始化方法，如果不需要，可以删除掉这个方法
      * 如果这个方法被定义，那么在Controller被构造以后，Yaf会调用这个方法
      */
-    public function init()
+    public function initConstruct()
     {
         $this->_ip = $this->getIp();//获取客户端请求的IP
         $this->_method = $this->getMethod();//获取HTTP的请求方式
@@ -98,10 +89,15 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
         $this->_browseInfo = $this->getBrowseInfo();//获取用户浏览器信息
         $this->_http_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
         $this->_config = new Container_Handler_HandlerConfig();
-        $this->setConfig();
+        $this->setApiConfig();
+        $this->checkApiAuth();
         $this->work();
     }
 
+    /**
+     * 接口主要功能验证
+     * @return string
+     */
     public function work()
     {
         //检查此类是否需要setRequestBody
@@ -122,6 +118,25 @@ abstract class Container_Handler_BaseHandler extends Container_Handler_HandlerCo
                 $this->_setApiError($checkResMsg);
                 return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
             }
+        }
+    }
+
+    /**
+     * 检查接口权限
+     */
+    public function checkApiAuth()
+    {
+        //检查接口是否需要token验证
+        if ($this->_config->needToken) {
+            $this->checkAuth();
+        }
+        //TODO::是否需要对接口请求进行安全验证，暴力请求和恶意攻击等
+        if ($this->_config->checkRequest) {
+
+        }
+        //TODO::是否需要对接口请求方式进行限制(需要严格规范请求方式)
+        if ($this->_config->checkMethod) {
+
         }
     }
 
