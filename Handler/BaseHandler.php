@@ -9,8 +9,6 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
 {
     use Container_Tool_HandlerHelp;
 
-    protected $checkAuth = ['index'];
-
     /**
      * @var int 用户ID
      */
@@ -86,6 +84,7 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
         $this->_user_agent = $this->getUserAgent();//获取用户浏览器信息
         $this->_version = $this->getVersion();//获取接口版本号
         $this->_token = $this->getToken();//获取用户请求的token验证信息
+        $this->token = $this->getToken();//获取用户请求的token验证信息
         $this->_browseInfo = $this->getBrowseInfo();//获取用户浏览器信息
         $this->_http_request = $this->getRequest();//Yaf框架自身属性，获取当前的请求实例
         $this->_config = new Container_Handler_HandlerConfig();
@@ -128,7 +127,10 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
     {
         //检查接口是否需要token验证
         if ($this->_config->needToken) {
-//            $this->checkAuth();
+            $this->exclusion = ['index'];
+        }
+        //检查接口是否需要token验证
+        if ($this->_config->needCollection) {
             $this->collectionAction = ['index'];
         }
         //TODO::是否需要对接口请求进行安全验证，暴力请求和恶意攻击等
