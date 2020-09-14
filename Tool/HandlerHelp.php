@@ -59,7 +59,7 @@ trait Container_Tool_HandlerHelp
         $response = [
             'code' => $code,
             'msg' => $this->_result['desc'],
-            'data' => $this->_result['data']
+            'data' => (object)$this->_result['data']
         ];;
 //        header('Content-Type:application/json');//加上这行,前端那边就不需要var result = $.parseJSON(data);
         echo json_encode($response,JSON_UNESCAPED_UNICODE);exit;
