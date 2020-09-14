@@ -128,7 +128,8 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
     {
         //检查接口是否需要token验证
         if ($this->_config->needToken) {
-            $this->checkAuth();
+//            $this->checkAuth();
+            $this->collectionAction = ['index'];
         }
         //TODO::是否需要对接口请求进行安全验证，暴力请求和恶意攻击等
         if ($this->_config->checkRequest) {

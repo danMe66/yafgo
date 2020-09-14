@@ -73,10 +73,10 @@ trait Container_Tool_HandlerHelp
     {
         $returnData = array_filter(explode('_', $errorCode, 2));
         if (!empty($returnData[0]) && !empty($returnData[1])) {
-            $this->_result['data'] = [];
+            $this->_result['data'] = (object)[];
             $this->_result['desc'] = $returnData[1];
         } else {
-            $this->_result['data'] = [];
+            $this->_result['data'] = (object)[];
             $this->_result['desc'] = $errorCode;
         }
     }
@@ -92,7 +92,7 @@ trait Container_Tool_HandlerHelp
             $this->_result['data'] = $data;
             $this->_result['desc'] = 'success';
         } else {
-            $this->_setApiError(Container_Error_ErrDesc_ErrorDto::PARAM_FORMAT_ERROR);
+            $this->_setApiError(Container_Error_ErrDesc_ErrorCode::$ErrorDesc[Container_Error_ErrDesc_ErrorCode::UNRECOGNIZED_DATA_FORMAT]);
             return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
         }
     }
