@@ -89,8 +89,9 @@ trait Container_Tool_HandlerHelp
     protected function _setApiSuccess(array $data)
     {
         if (is_array($data)) {
-            $this->_result['data'] = $data;
-            $this->_result['desc'] = 'success';
+            $msg = empty($data['msg']) ? 'success' : $data['msg'];
+            $this->_result['data'] = $data['data'];
+            $this->_result['desc'] = $msg;
         } else {
             $this->_setApiError(Container_Error_ErrDesc_ErrorCode::$ErrorDesc[Container_Error_ErrDesc_ErrorCode::UNRECOGNIZED_DATA_FORMAT]);
             return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
