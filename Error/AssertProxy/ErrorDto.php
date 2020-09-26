@@ -13,4 +13,6 @@ class Container_Error_AssertProxy_ErrorDto
     const PARAM_ILLEGAL = '100005_:s非法参数';
     const VALUE_NOT_EMPTY = '100006_:s参数值不能为空';
     const VALUE_FORMAT_ERROR = '100007_:s取值格式错误';
+    const PAGE_ERROR = '100007_:s取值不合规范，页码取值范围：1-999999999';
+    const PAGE_SIZE_ERROR = '100007_:s取值不合规范，每页显示条数取值范围：1-1000';
 }

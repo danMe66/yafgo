@@ -99,25 +99,30 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      */
     public function work()
     {
-        //检查此类是否需要setRequestBody
-        if (method_exists($this, 'setRequestBody')) {
-            $jsonMap = new JsonMapper();
-            $jsonMap->bEnforceMapType = false;
+        $jsonMap = new JsonMapper();
+        $jsonMap->bEnforceMapType = false;
+        //根据不同的请求方式获取参数
+        if ($this->_method == "POST") {
+            $content = json_decode($this->getRequest()->getRaw());
+        } else if ($this->_method == "GET") {
             $content = json_decode(json_encode($this->_params, JSON_FORCE_OBJECT));
-            set_error_handler(array($this, 'setMyRecoverableError'));
-            try {
-                $this->requestBody = $jsonMap->map($content, $this->setRequestBody());
-            } catch (InvalidArgumentException $e) {
-                $this->_setApiError(Container_Error_ErrDesc_ErrorDto::PARAM_FORMAT_REQ_ERROR);
-                return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
-            }
-            //检查入参
-            $checkResMsg = $this->requestBody->checkFieldValue();
-            if ($checkResMsg != 'success') {
-                $this->_setApiError($checkResMsg);
-                return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
-            }
+        } else {
+            $content = json_decode(json_encode($this->_params, JSON_FORCE_OBJECT));
         }
+        set_error_handler(array($this, 'setMyRecoverableError'));
+        try {
+            $this->requestBody = $jsonMap->map($content, $this->setRequestBody());
+        } catch (InvalidArgumentException $e) {
+            $this->_setApiError(Container_Error_ErrDesc_ErrorDto::PARAM_FORMAT_REQ_ERROR);
+            return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
+        }
+        //检查入参
+        $checkResMsg = $this->requestBody->checkFieldValue();
+        if ($checkResMsg != 'success') {
+            $this->_setApiError($checkResMsg);
+            return $this->getResult(Container_Error_ErrDesc_ErrorCode::API_ERROR);
+        }
+
     }
 
     /**
