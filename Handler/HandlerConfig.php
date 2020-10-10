@@ -6,6 +6,7 @@
  * @property boolean needCollection
  * @property boolean checkMethod
  * @property boolean checkRequest
+ * @property boolean isExport
  */
 final class Container_Handler_HandlerConfig
 {
@@ -29,11 +30,17 @@ final class Container_Handler_HandlerConfig
      */
     protected $_checkRequest;
 
-    function __construct($needToken = false, $needCollection = false, $checkMethod = false, $checkRequest = false)
+    /**
+     * @var bool 是否是导出接口
+     */
+    protected $_isExport;
+
+    function __construct($needToken = false, $needCollection = false, $checkMethod = false, $checkRequest = false, $isExport = false)
     {
         $this->_needToken = $needToken;
         $this->_needCollection = $needCollection;
         $this->_checkMethod = $checkMethod;
         $this->_checkRequest = $checkRequest;
+        $this->_isExport = $isExport;
     }
 }
