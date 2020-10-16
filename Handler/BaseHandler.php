@@ -101,14 +101,7 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
     {
         $jsonMap = new JsonMapper();
         $jsonMap->bEnforceMapType = false;
-        //根据不同的请求方式获取参数
-        if ($this->_method == "POST") {
-            $content = json_decode($this->getRequest()->getRaw());
-        } else if ($this->_method == "GET") {
-            $content = json_decode(json_encode($this->_params, JSON_FORCE_OBJECT));
-        } else {
-            $content = json_decode(json_encode($this->_params, JSON_FORCE_OBJECT));
-        }
+        $content = $this->_params;
         set_error_handler(array($this, 'setMyRecoverableError'));
         try {
             $this->requestBody = $jsonMap->map($content, $this->setRequestBody());
@@ -192,15 +185,24 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      */
     public function getParams()
     {
+        //根据不同的请求方式获取参数
         if ($_SERVER['REQUEST_METHOD'] == "GET") {
             $url = $this->getRequestUrl();
             $arr = parse_url($url);
-            if (empty($arr['query'])) return null;
-            $params = $this->convertUrlQuery($arr['query']);
-        } elseif ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $params = $_POST;
+            if (empty($arr['query']) && strstr($this->getContentType(), 'multipart/form-data')) {
+                $param = '';
+            } else {
+                $param = $this->convertUrlQuery($arr['query']);
+            }
+            $params = json_decode(json_encode($param, JSON_FORCE_OBJECT));
+        } else if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (strstr($this->getContentType(), 'multipart/form-data')) {
+                $params = $_POST;
+            } else {
+                $params = json_decode($this->getRequest()->getRaw());
+            }
         } else {
-            $params = '';
+            $params = null;
         }
         return $params;
     }
@@ -224,6 +226,15 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
     }
 
     /**
+     * 获取浏览器数据提交的ContentType
+     * @return mixed
+     */
+    public function getContentType()
+    {
+        return $_SERVER['CONTENT_TYPE'];
+    }
+
+    /**
      * TODO::获取接口版本号（后续的版本参数请求可以放在header请求头里边）
      * @return string
      */
@@ -236,7 +247,8 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      * 获取用户请求的token
      * @return string
      */
-    public function getToken()
+    public
+    function getToken()
     {
         return empty($_SERVER['HTTP_AUTHORIZATION']) ? null : $_SERVER['HTTP_AUTHORIZATION'];
     }
@@ -245,7 +257,8 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
      * 获取用户浏览器信息
      * @return string
      */
-    public function getBrowseInfo()
+    public
+    function getBrowseInfo()
     {
         return $_SERVER['HTTP_USER_AGENT'];
     }
