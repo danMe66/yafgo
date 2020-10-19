@@ -189,16 +189,23 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
         if ($_SERVER['REQUEST_METHOD'] == "GET") {//get请求
             $url = $this->getRequestUrl();
             $arr = parse_url($url);
-            if (!empty($arr['query'])) {//query传参
+            //①query传参
+            if (!empty($arr['query'])) {
                 $param = $this->convertUrlQuery($arr['query']);
-            } else {
+            } //②其他
+            else {
                 $param = '';
             }
             $params = json_decode(json_encode($param, JSON_FORCE_OBJECT));
         } else if ($_SERVER['REQUEST_METHOD'] == "POST") {//post请求
-            if (strstr($this->getContentType(), 'multipart/form-data')) {//form-data传参
+            //①form-data传参
+            if (strstr($this->getContentType(), 'multipart/form-data')) {
                 $params = $_POST;
-            } else {
+            } //②x-www-form-urlencoded传参
+            elseif (strstr($this->getContentType(), 'application/x-www-form-urlencoded')) {
+                $params = $_POST;
+            } //③raw-json传参
+            else {
                 $params = json_decode($this->getRequest()->getRaw());
             }
         } else {
