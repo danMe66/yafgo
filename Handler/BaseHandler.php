@@ -186,17 +186,17 @@ abstract class Container_Handler_BaseHandler extends Yaf_Controller_Abstract
     public function getParams()
     {
         //根据不同的请求方式获取参数
-        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {//get请求
             $url = $this->getRequestUrl();
             $arr = parse_url($url);
-            if (empty($arr['query']) && strstr($this->getContentType(), 'multipart/form-data')) {
-                $param = '';
-            } else {
+            if (!empty($arr['query'])) {//query传参
                 $param = $this->convertUrlQuery($arr['query']);
+            } else {
+                $param = '';
             }
             $params = json_decode(json_encode($param, JSON_FORCE_OBJECT));
-        } else if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            if (strstr($this->getContentType(), 'multipart/form-data')) {
+        } else if ($_SERVER['REQUEST_METHOD'] == "POST") {//post请求
+            if (strstr($this->getContentType(), 'multipart/form-data')) {//form-data传参
                 $params = $_POST;
             } else {
                 $params = json_decode($this->getRequest()->getRaw());
