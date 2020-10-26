@@ -1,6 +1,7 @@
 <?php
 
 use Container\Utilities\Constant\FileConstant;
+use Container\Utilities\Constant\HttpConstant;
 
 class Container_Utilities_Common_Http
 {
@@ -69,13 +70,14 @@ class Container_Utilities_Common_Http
      */
     public static function getHttpDuration($logPath, $reportInfo)
     {
-        $HttpDuration = self::startHttpTime() - self::endHttpTime();
-        if ($HttpDuration >= 1000) {
+        $HttpDuration = self::endHttpTime() - self::startHttpTime();
+        if ($HttpDuration >= HttpConstant::HTTP_DELAY_TIME) {
             //获取当前请求的地址
             $requestUrl = Yaf_Registry::get('REQUEST_URI');
-            file_put_contents($logPath . '/' . date("Y-m-d", time() . '.log'), date("Y-m-d H:i:s", time()) . " API: " . $requestUrl . " slow_time" . ($HttpDuration) . "\n", FILE_APPEND);
+            file_put_contents($logPath . '/' . date("Y-m-d", time()) . '.log', date("Y-m-d H:i:s", time()) . " API: " . $requestUrl . " slow_time:" . ($HttpDuration) . "\n", FILE_APPEND);
             if ($reportInfo['isNotice'] == true) {
-                Container_Utilities_Common_Notice::sendWxWebhook($reportInfo['url'], $reportInfo['content']);
+                $content = str_replace("HttpDuration", $HttpDuration, $reportInfo['content']);
+                Container_Utilities_Common_Notice::sendWxWebhook($reportInfo['url'], $content);
             }
         }
     }

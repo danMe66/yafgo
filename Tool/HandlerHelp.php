@@ -67,10 +67,14 @@ trait Container_Tool_HandlerHelp
         ];;
 //        header('Content-Type:application/json');//加上这行,前端那边就不需要var result = $.parseJSON(data);
         //记录请求日志
+        $content = "# **ALD项目API超时告警⚠️**\n" .
+            "> 所属项目：<font color=\"info\">ALD运营后台</font> \n" .
+            "> API地址：<font color=\"info\">" . Yaf_Registry::get('REQUEST_URI') . "</font> \n" .
+            "> 耗时：<font color=\"info\">HttpDuration</font> \n";
         $reportInfo = [
             'isNotice' => NoticeConstant::IS_NOTICE_TRUE,
             'url' => DomainConstant::WECHAT_MONITOR,
-            'content' => "",
+            'content' => $content,
         ];
         $slowLogPath = $GLOBALS['_G']['config']['log']["path"] . FileConstant::SLOW_LOG_PATH;
         Container_Utilities_Common_Http::getHttpDuration($slowLogPath, $reportInfo);
