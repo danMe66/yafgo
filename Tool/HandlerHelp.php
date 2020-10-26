@@ -1,5 +1,9 @@
 <?php
 
+use Container\Utilities\Constant\DomainConstant;
+use Container\Utilities\Constant\FileConstant;
+use Container\Utilities\Constant\NoticeConstant;
+
 trait Container_Tool_HandlerHelp
 {
     /**
@@ -62,7 +66,16 @@ trait Container_Tool_HandlerHelp
             'data' => (object)$this->_result['data']
         ];;
 //        header('Content-Type:application/json');//加上这行,前端那边就不需要var result = $.parseJSON(data);
-        echo json_encode($response,JSON_UNESCAPED_UNICODE);exit;
+        //记录请求日志
+        $reportInfo = [
+            'isNotice' => NoticeConstant::IS_NOTICE_TRUE,
+            'url' => DomainConstant::WECHAT_MONITOR,
+            'content' => "",
+        ];
+        $slowLogPath = $GLOBALS['_G']['config']['log']["path"] . FileConstant::SLOW_LOG_PATH;
+        Container_Utilities_Common_Http::getHttpDuration($slowLogPath, $reportInfo);
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
+        exit;
     }
 
     /**

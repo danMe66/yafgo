@@ -1,0 +1,7 @@
+声明：
+此基类项目basecontainer是刺猬sgw项目的共用基类，切记不要在单独的项目中进行修改，
+如需修改，请clone项目http://tech.ciwei:8087/tools/basecontainer.git进行修改，然后push
+
+在项目中使用：
+git subtree pull --prefix=application/library/Container http://tech.ciwei:8087/tools/basecontainer.git master --squash
+
