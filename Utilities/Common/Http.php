@@ -71,7 +71,7 @@ class Container_Utilities_Common_Http
     public static function getHttpDuration($logPath, $reportInfo)
     {
         $HttpDuration = self::endHttpTime() - self::startHttpTime();
-        if ($HttpDuration >= HttpConstant::HTTP_DELAY_TIME) {
+        if ($HttpDuration >= HttpConstant::HTTP_DELAY_TIME_ADMIN) {
             //获取当前请求的地址
             $requestUrl = Yaf_Registry::get('REQUEST_URI');
             file_put_contents($logPath . '/' . date("Y-m-d", time()) . '.log', date("Y-m-d H:i:s", time()) . " API: " . $requestUrl . " slow_time:" . ($HttpDuration) . "\n", FILE_APPEND);
